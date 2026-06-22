@@ -1,5 +1,3 @@
-# FICHIER 4 : src/main.jsx  (dans le dossier src/)
-# ─────────────────────────────────────────
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import BudgetImpactApp from './App.jsx'
