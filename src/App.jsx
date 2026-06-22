@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Check,AlertTriangle,Info,ArrowLeft,RotateCcw,Sparkles,Filter,
-  ShoppingBag,Car,Home,Users,PiggyBank,Briefcase,Building2,Globe,TrendingUp,ShieldCheck,ChevronDown,X
+  ShoppingBag,Car,Home,Users,PiggyBank,Briefcase,Building2,Globe,TrendingUp,ShieldCheck,ChevronDown,X,MapPin
 } from 'lucide-react';
 
 const C={
@@ -21,6 +21,7 @@ const sect=s=>p=>isEnt(p)&&p.details.independant===s;
 const expD=d=>p=>p.situations.includes('expatrie')&&p.details.expatrie===d;
 const invD=d=>p=>isInv(p)&&p.details.investisseur===d;
 const revA=(...v)=>p=>v.includes(p.revenu);
+const inRegion=r=>p=>p.regions.includes(r);
 
 const UI={
 fr:{
@@ -58,12 +59,13 @@ fr:{
   ag:{jeune:'Moins de 26 ans',actif:'26 \u00e0 59 ans',senior:'60 ans et plus'},
   sl:{salarie:'Salari\u00e9\u00b7e',independant:'Entrepreneur\u00b7e',retraite:'Retrait\u00e9\u00b7e',etudiant:'\u00c9tudiant\u00b7e',expatrie:'Expatri\u00e9\u00b7e',investisseur:'Investisseur\u00b7euse'},
   dl:{tourisme:'Tourisme',tech:'Tech\u00a0/\u00a0Digital',manufacturing:'Manufacturing',autre:'Autre secteur',golden_visa:'Golden Visa',immobilier_sez:'Immobilier\u00a0/\u00a0SEZ',obligations:"Obligations d'\u00c9tat",capital_local:'Capital local',actions_dividendes:'Actions\u00a0/\u00a0dividendes',permis_pro:'Permis pro',permis_investisseur:'Permis investisseur',conjoint:'Conjoint\u00b7e',retraite_etranger:'Retrait\u00e9\u00b7e'},
+  q_region:'Dans quelle(s) r\u00e9gion(s) r\u00e9sidez-vous\u00a0?',r_h:'Facultatif \u2014 permet d\u2019identifier les projets locaux qui vous concernent directement.',r_skip:'Passer cette \u00e9tape',
   disc:"Plateforme ind\u00e9pendante \u00e0 but informatif uniquement. Aucune information ne constitue un conseil financier ou juridique. Conform\u00e9ment \u00e0 la Data Protection Act 2017, les donn\u00e9es collect\u00e9es sont strictement anonymes et \u00e0 des fins non lucratives.",
 },
 en:{
   header:'Mauritius Budget 2026\u20132027',step:(c,t)=>`Step ${c} of ${t}`,
   intro_title:"How does this budget affect you?",
-  intro_sub:"Find out which measures of the 2026-2027 Budget apply to you directly.",
+  intro_sub:"Find out what measures from the 2026-2027 Budget apply directly to you.",
   start:'Start',back:'Back',restart:'Start over',next:'Continue',
   q_nat:'Are you Mauritian?',oui:'Yes',non:'No',
   q_genre:'You are\u2026',homme:'A man',femme:'A woman',gnr:'Prefer not to say',
@@ -94,12 +96,13 @@ en:{
   ag:{jeune:'Under 26',actif:'26 to 59',senior:'60 and over'},
   sl:{salarie:'Employee',independant:'Entrepreneur',retraite:'Retired',etudiant:'Student',expatrie:'Expat',investisseur:'Investor'},
   dl:{tourisme:'Tourism',tech:'Tech / Digital',manufacturing:'Manufacturing',autre:'Other sector',golden_visa:'Golden Visa',immobilier_sez:'Real Estate / SEZ',obligations:'Gov. bonds',capital_local:'Local business',actions_dividendes:'Shares / dividends',permis_pro:'Work permit',permis_investisseur:'Investor permit',conjoint:'Mauritian spouse',retraite_etranger:'Retired resident'},
+  q_region:'Which region(s) do you live in?',r_h:'Optional \u2014 helps identify local projects relevant to you.',r_skip:'Skip this step',
   disc:"Independent informational platform only. No information constitutes financial or legal advice. In accordance with the Data Protection Act 2017, data collected is strictly anonymous and for non-commercial purposes.",
 },
 kr:{
   header:'Bidzet Moris 2026\u20132027',step:(c,t)=>`Letap ${c} lor ${t}`,
-  intro_title:"Kouma bidzet nasional afekte ou?",
-  intro_sub:"Pou aid ou konpran ki mezir Bidze 2026-2027 konsern ou personalman.",
+  intro_title:"Kouma bidzet-la afekte ou\u00a0?",
+  intro_sub:"Konpran ki mezir Bidze nasional konsern ou personalman.",
   start:'Koumans',back:'Retourn',restart:'Rekominse',next:'Kontinye',
   q_nat:'Eski ou Morisien/Morisin\u00a0?',oui:'Wi',non:'Non',
   q_genre:'Ou ete\u2026',homme:'Enn misie',femme:'Enn dam',gnr:'Mo prefer pa dir',
@@ -130,6 +133,7 @@ kr:{
   ag:{jeune:'Mwin ki 26 an',actif:'26-59 an',senior:'60 an ek plis'},
   sl:{salarie:'Salarye',independant:'Antraprenner',retraite:'Retrete',etudiant:'Etidian',expatrie:'Expatriye',investisseur:'Investiser'},
   dl:{tourisme:'Touris',tech:'Teknolozi/Dijital',manufacturing:'Fabrikasion',autre:'Lot sektir',golden_visa:'Golden Visa',immobilier_sez:'Imobilye/SEZ',obligations:'Obligasion leta',capital_local:'Kapital lokal',actions_dividendes:'Aksion/dividann',permis_pro:'Permi travay',permis_investisseur:'Permi investiser',conjoint:'Konjwen Morisien',retraite_etranger:'Retrete rezidan'},
+  q_region:'Dan ki rezion\u00a0ou reste\u00a0?',r_h:'Faskiltatif \u2014 ed nou trouv proze lokal ki konsern ou direkteman.',r_skip:'Pas sa letap',
   disc:"Platform endepandan pou informasion selman. Okenn linformasion pa konstitye enn konseil finansye ou ziridik. Konforme ar Data Protection Act 2017, done kolekte anonimman ek pou bi non-lisratif.",
 },
 };
@@ -164,6 +168,20 @@ const DQ={
     ],
   },
 };
+
+const REGIONS=[
+  {v:'port_louis',    l:{fr:'Port Louis',          en:'Port Louis',          kr:'Port Louis'},         hint:{fr:'Port Louis, Roche Bois, Plaine Verte\u2026',         en:'Port Louis, Roche Bois, Plaine Verte\u2026',         kr:'Port Louis, Ros Bwa\u2026'}},
+  {v:'pamplemousses', l:{fr:'Pamplemousses',        en:'Pamplemousses',       kr:'Pamplemousses'},      hint:{fr:'Triolet, Terre Rouge, Riche Terre, Mapou\u2026',     en:'Triolet, Terre Rouge, Riche Terre, Mapou\u2026',     kr:'Triolet, Ter Rouz, Mapou\u2026'}},
+  {v:'riviere_rempart',l:{fr:'Rivi\u00e8re du Rempart',en:'Rivi\u00e8re du Rempart',kr:'Rivye du Rempar'},   hint:{fr:'Rivi\u00e8re du Rempart, Roches Noires, Goodlands\u2026',en:'Rivi\u00e8re du Rempart, Roches Noires\u2026',     kr:'Rivye du Rempar, Ros Nwar\u2026'}},
+  {v:'flacq',         l:{fr:'Flacq',                en:'Flacq',               kr:'Flak'},               hint:{fr:'Centre de Flacq, Belle Mare, Trou d\u2019Eau Douce\u2026',en:'Centre de Flacq, Belle Mare, Trou d\u2019Eau Douce\u2026',kr:'Sant de Flak, Belle Mar\u2026'}},
+  {v:'grand_port',    l:{fr:'Grand Port',            en:'Grand Port',          kr:'Gran Por'},           hint:{fr:'Mah\u00e9bourg, Rose Belle, Rivi\u00e8re des Cr\u00e9oles\u2026',en:'Mah\u00e9bourg, Rose Belle\u2026',               kr:'Mahebour, Roz Belle\u2026'}},
+  {v:'savanne',       l:{fr:'Savanne',               en:'Savanne',             kr:'Savan'},              hint:{fr:'Souillac, Riviere des Anguilles, Chemin Grenier\u2026',en:'Souillac, Riviere des Anguilles\u2026',             kr:'Suliak, Rivye Lezangiy\u2026'}},
+  {v:'black_river',   l:{fr:'Black River',           en:'Black River',         kr:'Black River'},        hint:{fr:'Tamarin, Flic en Flac, Albion, Case Noyale\u2026',  en:'Tamarin, Flic en Flac, Albion\u2026',               kr:'Tamarin, Albion\u2026'}},
+  {v:'moka',          l:{fr:'Moka',                  en:'Moka',                kr:'Moka'},               hint:{fr:'Moka, C\u00f4te d\u2019Or, Quartier Militaire, St Pierre\u2026',en:'Moka, C\u00f4te d\u2019Or, Quartier Militaire\u2026',kr:'Moka, Kote d\u2019Or\u2026'}},
+  {v:'plaines_wilhems',l:{fr:'Plaines Wilhems',     en:'Plaines Wilhems',     kr:'Plenn Wilhem'},       hint:{fr:'Quatre Bornes, Curepipe, Rose Hill, Beau Bassin, Vacoas\u2026',en:'Quatre Bornes, Curepipe, Rose Hill, Vacoas\u2026',kr:'Katr Born, Kirpip, Roz Il\u2026'}},
+  {v:'rodrigues',     l:{fr:'Rodrigues',             en:'Rodrigues',           kr:'Rodrigues'},          hint:{fr:'Port Mathurin, La Ferme, Plaine Corail, Baladirou\u2026',en:'Port Mathurin, Plaine Corail\u2026',               kr:'Port Matiris, Plenn Koray\u2026'}},
+  {v:'agalega',       l:{fr:'Agal\u00e9ga / \u00celes \u00e9parses',en:'Agalega / Outer Islands',kr:'Agalega / Outer Islands'},hint:{fr:'Agal\u00e9ga, Saint Brandon\u2026',en:'Agalega, St Brandon\u2026',kr:'Agalega, Sen Brandon\u2026'}},
+];
 
 const M=[
 {id:'sucre',section:'quotidien',direction:'negative',when:'d\u00e8s oct.\u00a02026',
@@ -505,6 +523,67 @@ const M=[
  source:{ref:'\u00a727.8(c)',organisme:'Minist\u00e8re de l\u2019Int\u00e9gration Sociale'},
  condition:invD('actions_dividendes'),opportunity:true,
  actionTip:{fr:"Dividendes et int\u00e9r\u00eats sont exclus du test de ressources SAP, contrairement aux revenus d'emploi ou locatifs. Les implications patrimoniales m\u00e9ritent l'avis d'un conseiller financier agr\u00e9\u00e9.",en:"Under the budget, dividends and interest are excluded from the SAP means test, unlike employment or rental income. Patrimonial implications worth examining with a qualified financial adviser.",kr:"Dan bidzet, dividann ek intere exkli dan test resours SAP, kontrement ar reveni travay ou lokasion. Linpak patrimoniyal merite examinasion ar enn konseye finansye kwalifikasie."}},
+// ── Mesures géographiques ─────────────────────────────────────────────────────
+{id:'piscine_triolet',section:'local',direction:'positive',when:null,
+ title:{fr:'Nouvelle piscine publique \u00e0 Triolet',en:'New public swimming pool in Triolet',kr:'Nouvo pisin piblik Triolet'},
+ text:{fr:"Une piscine publique sera construite \u00e0 Triolet pour am\u00e9liorer l'acc\u00e8s aux \u00e9quipements sportifs dans le nord.",en:'A public swimming pool will be built in Triolet to improve access to sports facilities in the north.',kr:'Enn pisin piblik pou konstrir Triolet pou amelyor aksesi ar instalasion spor dan nor.'},
+ officialText:"Le Gouvernement pr\u00e9voit la construction de deux nouvelles piscines, dont une \u00e0 Triolet.",
+ source:{ref:'\u00a7194',organisme:'Min. Jeunesse et Sports'},condition:inRegion('pamplemousses')},
+{id:'piscine_flacq',section:'local',direction:'positive',when:null,
+ title:{fr:'Nouvelle piscine publique \u00e0 Flacq',en:'New public swimming pool in Flacq',kr:'Nouvo pisin piblik Flak'},
+ text:{fr:"Une piscine publique sera construite \u00e0 Flacq pour am\u00e9liorer l'acc\u00e8s aux \u00e9quipements sportifs dans l'est.",en:'A public swimming pool will be built in Flacq to improve access to sports facilities in the east.',kr:'Enn pisin piblik pou konstrir Flak pou amelyor aksesi ar instalasion spor dan les.'},
+ officialText:"Le Gouvernement pr\u00e9voit la construction de deux nouvelles piscines, dont une \u00e0 Flacq.",
+ source:{ref:'\u00a7194',organisme:'Min. Jeunesse et Sports'},condition:inRegion('flacq')},
+{id:'musee_mahebourg',section:'local',direction:'positive',when:null,
+ title:{fr:'R\u00e9habilitation du Mus\u00e9e d\u2019Histoire \u00e0 Mah\u00e9bourg',en:'National History Museum rehabilitation in Mah\u00e9bourg',kr:'Reabilitasion Mize Listwar Nasyonal Mahebour'},
+ text:{fr:"Rs\u00a0100\u00a0millions des fonds de loterie nationale seront allou\u00e9s \u00e0 la r\u00e9habilitation compl\u00e8te du Mus\u00e9e d'Histoire Nationale \u00e0 Mah\u00e9bourg.",en:'Rs\u00a0100 million from lottery funds will be allocated to the full rehabilitation of the National History Museum in Mah\u00e9bourg.',kr:'Rs\u00a0100 milyon depi fon loteri nasyonal pou aloke pou reabilitasion konple Mize Listwar Mahebour.'},
+ officialText:"Une r\u00e9habilitation compl\u00e8te du Mus\u00e9e d'Histoire Nationale \u00e0 Mah\u00e9bourg sera financ\u00e9e depuis le produit de la loterie nationale pour un montant total de Rs\u00a0100\u00a0millions.",
+ source:{ref:'\u00a785(1)',organisme:'Min. Arts et Culture'},condition:inRegion('grand_port')},
+{id:'le_morne_cultural',section:'local',direction:'positive',when:null,
+ title:{fr:'Rs\u00a0124\u00a0millions pour le site du Patrimoine Le Morne',en:'Rs\u00a0124 million for Le Morne Cultural Landscape',kr:'Rs\u00a0124 milyon pou Le Morne Cultural Landscape'},
+ text:{fr:"Rs\u00a0124\u00a0millions sur trois ans seront investis pour valoriser le site du Patrimoine Mondial Le Morne.",en:'Rs\u00a0124 million over three years will be invested to enhance the Le Morne UNESCO World Heritage site.',kr:'Rs\u00a0124 milyon lor trwa an pou amelyor lexperiens lor site Patrimwin Mondyal Le Morne.'},
+ officialText:"Un montant de Rs\u00a0124\u00a0millions sur trois exercices financiers est pr\u00e9vu pour la valorisation du paysage culturel Le Morne afin d'am\u00e9liorer l'exp\u00e9rience des visiteurs.",
+ source:{ref:'\u00a785(2)',organisme:'Min. Arts et Culture'},condition:inRegion('black_river')},
+{id:'m4_motorway',section:'local',direction:'positive',when:null,
+ title:{fr:'Rs\u00a02\u00a0milliards pour l\u2019autoroute M4 (Forbach\u2013a\u00e9roport)',en:'Rs\u00a02 billion for M4 motorway (Forbach to airport)',kr:'Rs\u00a02 miliar pou lotowot M4 (Forbach-eroport)'},
+ text:{fr:"L'autoroute M4 reliera Forbach \u00e0 l'a\u00e9roport, ouvrant l'acc\u00e8s aux villages du corridor et cr\u00e9ant de nouvelles opportunit\u00e9s \u00e9conomiques.",en:'The M4 motorway will connect Forbach to the airport, opening access to villages along the corridor and creating new economic opportunities.',kr:'Lotowot M4 pou konekte Forbach ar leroport, ouvriran aksesi bann vilaz dan koridor ek kre nouvo opurtinite ekonomik.'},
+ officialText:"Rs\u00a02\u00a0milliards sont pr\u00e9vus pour le projet d'autoroute M4 reliant Forbach \u00e0 l'a\u00e9roport, qui ouvrira l'acc\u00e8s aux villages du couloir et cr\u00e9era des opportunit\u00e9s \u00e9conomiques.",
+ source:{ref:'\u00a748',organisme:'Min. Travaux Publics'},condition:p=>inRegion('moka')(p)||inRegion('plaines_wilhems')(p)},
+{id:'barrage_anguilles',section:'local',direction:'positive',when:'cette ann\u00e9e',
+ title:{fr:'Construction du barrage Rivi\u00e8re des Anguilles',en:'Rivi\u00e8re des Anguilles dam construction starts',kr:'Konstriksion baraz Rivye Lezangiy koumanse'},
+ text:{fr:"La construction du barrage de la Rivi\u00e8re des Anguilles commencera cette ann\u00e9e, dans le cadre d'un investissement de Rs\u00a06,4\u00a0milliards pour l'eau.",en:"Construction of the Rivi\u00e8re des Anguilles dam will begin this year, part of a Rs\u00a06.4\u00a0billion water infrastructure investment.",kr:'Konstriksion baraz Rivye Lezangiy pou koumanse lane-la, pou Rs\u00a06,4 miliar pou dilo.'},
+ officialText:"La construction du barrage de la Rivi\u00e8re des Anguilles est pr\u00e9vue pour d\u00e9marrer plus tard dans l'ann\u00e9e dans le cadre du programme d'am\u00e9lioration du syst\u00e8me de distribution d'eau.",
+ source:{ref:'\u00a7125',organisme:'Min. Eau'},condition:inRegion('savanne')},
+{id:'hopital_pamplemousses',section:'local',direction:'positive',when:null,
+ title:{fr:'Nouveau SSRN Hospital \u00e0 Pamplemousses',en:'New SSRN Hospital in Pamplemousses',kr:'Nouvo Lopital SSRN Pamplemousses'},
+ text:{fr:"Un nouveau SSRN Hospital, incluant des \u00e9quipements de recherche, sera construit \u00e0 Pamplemousses.",en:'A new SSRN Hospital, including research facilities, will be built in Pamplemousses.',kr:'Enn nouvo Lopital SSRN, avek fasilite resers, pou konstrir Pamplemousses.'},
+ officialText:"La construction du nouveau SSRN Hospital incluant des installations de recherche \u00e0 Pamplemousses est pr\u00e9vue dans le cadre d'un investissement de Rs\u00a01,5\u00a0milliard pour les infrastructures de sant\u00e9.",
+ source:{ref:'\u00a7164(1)',organisme:'Min. Sant\u00e9'},condition:inRegion('pamplemousses')},
+{id:'rehab_flacq',section:'local',direction:'positive',when:null,
+ title:{fr:"L'ancien h\u00f4pital de Flacq converti en centre de r\u00e9habilitation",en:'Former Flacq hospital converted to rehabilitation centre',kr:'Ansien lopital Flak rekonverti an sant reabilitasion'},
+ text:{fr:"Une aile de l'ancien h\u00f4pital de Flacq sera transform\u00e9e en centre de r\u00e9habilitation pour les personnes d\u00e9pendantes aux drogues.",en:'A wing of the former Flacq hospital will be converted into a drug rehabilitation centre.',kr:'Enn zel ansien lopital Flak pou transforme an sant reabilitasion pou dimounn depandan droge.'},
+ officialText:"Le Minist\u00e8re de la Sant\u00e9 proc\u00e8dera \u00e0 la conversion d'une aile de l'ancien h\u00f4pital de Flacq en centre de r\u00e9habilitation offrant des services th\u00e9rapeutiques et de soutien.",
+ source:{ref:'\u00a7222',organisme:'Min. Sant\u00e9'},condition:inRegion('flacq')},
+{id:'runway_rodrigues',section:'local',direction:'positive',when:null,
+ title:{fr:"Nouvelle piste d\u2019atterrissage \u00e0 Plaine Corail, Rodrigues",en:'New runway at Plaine Corail, Rodrigues',kr:'Nouvo pist aterisaz Plenn Koray, Rodrigues'},
+ text:{fr:"La nouvelle piste de Rodrigues am\u00e9liorera les liaisons a\u00e9riennes et renforcera le potentiel touristique de l'\u00eele.",en:"The new runway at Plaine Corail will improve air connections and strengthen Rodrigues' tourism potential.",kr:'Nouvo pist aterisaz Plenn Koray pou amelyor koneksion erien ek ranforse potansyel touristik Rodrigues.'},
+ officialText:"La construction de la nouvelle piste d'atterrissage \u00e0 Plaine Corail ainsi que la route d'acc\u00e8s pour acc\u00e9l\u00e9rer les op\u00e9rations du Technopark \u00e0 Baladirou sont pr\u00e9vues pour Rodrigues.",
+ source:{ref:'\u00a7253',organisme:'Rodrigues Regional Assembly'},condition:inRegion('rodrigues')},
+{id:'budget_rodrigues',section:'local',direction:'positive',when:null,
+ title:{fr:'Rs\u00a011,2\u00a0milliards allou\u00e9s \u00e0 Rodrigues',en:'Rs\u00a011.2 billion allocated to Rodrigues',kr:'Rs\u00a011,2 miliar aloke pou Rodrigues'},
+ text:{fr:"Le budget total de Rodrigues atteindra Rs\u00a011,2\u00a0milliards\u00a0: Rs\u00a05,5\u00a0milliards en d\u00e9penses courantes et Rs\u00a0825\u00a0millions en investissements.",en:'The total Rodrigues budget will reach Rs\u00a011.2 billion: Rs\u00a05.5 billion in recurrent expenditure and Rs\u00a0825 million in capital investment.',kr:'Total bidze Rodrigues pou ateyn Rs\u00a011,2 miliar: Rs\u00a05,5 miliar depans kouran ek Rs\u00a0825 milyon investisman kapital.'},
+ officialText:"Pour l'exercice 2026-2027, le Gouvernement alloue Rs\u00a05,5\u00a0milliards en d\u00e9penses courantes et Rs\u00a0825\u00a0millions en d\u00e9penses en capital pour l'Assembl\u00e9e R\u00e9gionale de Rodrigues. L'ensemble des d\u00e9penses gouvernementales pour Rodrigues atteindra Rs\u00a011,2\u00a0milliards.",
+ source:{ref:'\u00a7254',organisme:'Rodrigues Regional Assembly'},condition:inRegion('rodrigues')},
+{id:'masterplan_agalega',section:'local',direction:'positive',when:null,
+ title:{fr:'Plan directeur complet pour Agal\u00e9ga',en:'Comprehensive master plan for Agalega',kr:'Plan direkter konpre pou Agalega'},
+ text:{fr:"Un plan directeur sera finalis\u00e9 pour Agal\u00e9ga, couvrant logement, infrastructure, sant\u00e9, \u00e9ducation, \u00e9nergie renouvelable et \u00e9co-tourisme.",en:'A comprehensive master plan will be finalised for Agalega, covering housing, infrastructure, health, education, renewable energy, food security and eco-tourism.',kr:'Enn plan direkter pou finalize pou Agalega, kouvriran logazman, infrastriktir, lasante, edikasion, enerzi renouvlab ek eko-touris.'},
+ officialText:"La finalisation d'un plan directeur complet ax\u00e9 sur le logement, l'infrastructure, les soins de sant\u00e9, l'\u00e9ducation, l'\u00e9nergie renouvelable, la s\u00e9curit\u00e9 alimentaire et l'\u00e9co-tourisme pour Agal\u00e9ga est pr\u00e9vue.",
+ source:{ref:'\u00a7255',organisme:'Min. \u00celes ext\u00e9rieures'},condition:inRegion('agalega')},
+{id:'port_pl',section:'local',direction:'positive',when:null,
+ title:{fr:'Rs\u00a07\u00a0milliards investis dans le port de Port Louis',en:'Rs\u00a07 billion invested in Port Louis harbour',kr:'Rs\u00a07 miliar investi dan por Port Louis'},
+ text:{fr:"Le Port de Port Louis b\u00e9n\u00e9ficiera d'une s\u00e9rie de projets strat\u00e9giques d'une valeur totale d'environ Rs\u00a07\u00a0milliards.",en:'Port Louis harbour will benefit from strategic projects totalling around Rs\u00a07 billion, including the container terminal project.',kr:'Por Port Louis pou benefisie proze stratezik total Rs\u00a07 miliar, inkli proze terminal kontenier.'},
+ officialText:"La Mauritius Ports Authority et la Cargo Handling Corporation ont entrepris la mise en \u0153uvre d'une s\u00e9rie de projets strat\u00e9giques repr\u00e9sentant un investissement total d'environ Rs\u00a07\u00a0milliards.",
+ source:{ref:'\u00a745',organisme:'Mauritius Ports Authority'},condition:inRegion('port_louis')},
 ];
 
 const SECTIONS=[
@@ -518,6 +597,7 @@ const SECTIONS=[
   {id:'entreprise',  l:{fr:'Votre entreprise',         en:'Your business',          kr:'Ou biznes'},       icon:Building2},
   {id:'expatrie',    l:{fr:'R\u00e9sident \u00e9tranger',         en:'Foreign resident',       kr:'Rezidan etranze'}, icon:Globe},
   {id:'investisseur',l:{fr:'Votre investissement',     en:'Your investment',        kr:'Ou linvestisman'}, icon:TrendingUp},
+  {id:'local',       l:{fr:'Votre r\u00e9gion',             en:'Your region',            kr:'Ou rezion'},        icon:MapPin},
 ];
 const DM={
   positive:{Icon:Check,  bg:'posBg',fg:'posT'},
@@ -667,14 +747,14 @@ export default function BudgetImpactApp(){
   const[dqi,setDqi]=useState(0);
   const[secFilt,setSecFilt]=useState([]);
   const[pro,setPro]=useState({
-    mauricien:null,genre:null,age:null,situations:[],details:{},revenu:null,
+    mauricien:null,genre:null,age:null,situations:[],details:{},revenu:null,regions:[],
     proprietaire:false,voiture:false,enfants:false,pretPersonnel:false,locatif:false,crypto:false,invalidite:false,
   });
 
   const step=hist[hist.length-1];
   const go=s=>setHist(h=>[...h,s]);
   const back=()=>setHist(h=>h.length>1?h.slice(0,-1):h);
-  const restart=()=>{setHist(['intro']);setDqi(0);setSecFilt([]);setPro({mauricien:null,genre:null,age:null,situations:[],details:{},revenu:null,proprietaire:false,voiture:false,enfants:false,pretPersonnel:false,locatif:false,crypto:false,invalidite:false});};
+  const restart=()=>{setHist(['intro']);setDqi(0);setSecFilt([]);setPro({mauricien:null,genre:null,age:null,situations:[],details:{},revenu:null,regions:[],proprietaire:false,voiture:false,enfants:false,pretPersonnel:false,locatif:false,crypto:false,invalidite:false});};
   const togSit=v=>setPro(p=>({...p,situations:p.situations.includes(v)?p.situations.filter(s=>s!==v):[...p.situations,v]}));
   const togX=k=>setPro(p=>({...p,[k]:!p[k]}));
 
@@ -825,9 +905,44 @@ export default function BudgetImpactApp(){
           <TogCard label={T.e_loc} checked={pro.locatif} onClick={()=>togX('locatif')}/>
           <TogCard label={T.e_cry} checked={pro.crypto} onClick={()=>togX('crypto')}/>
           <TogCard label={T.e_inv2} checked={pro.invalidite} onClick={()=>togX('invalidite')}/>
-          <button onClick={()=>{sendAnalytics(pro);go('results');}} className="w-full text-white font-bold text-lg rounded-2xl py-4 mt-2 hover:opacity-90 transition-opacity"
+          <button onClick={()=>go('region')} className="w-full text-white font-bold text-lg rounded-2xl py-4 mt-2 hover:opacity-90 transition-opacity"
             style={{background:C.lagoon,fontFamily:"'Space Grotesk',sans-serif"}}>
             {T.voir}
+          </button>
+          <Disclaimer T={T}/>
+        </div>}
+
+        {/* REGION */}
+        {step==='region'&&<div className="fi">
+          <BackBtn onClick={back} T={T}/>
+          <div className="flex items-center gap-2 mb-1">
+            <MapPin size={20} color={C.lagoon}/>
+            <h2 className="text-2xl font-bold" style={{fontFamily:"'Space Grotesk',sans-serif",color:C.ink}}>{T.q_region}</h2>
+          </div>
+          <p className="text-sm mb-5" style={{color:C.soft}}>{T.r_h}</p>
+          {REGIONS.map(r=>{
+            const on=pro.regions.includes(r.v);
+            return(
+              <button key={r.v} onClick={()=>setPro(p=>({...p,regions:on?p.regions.filter(x=>x!==r.v):[...p.regions,r.v]}))}
+                className="w-full flex items-start gap-3 text-left rounded-2xl border-2 px-4 py-3 mb-2 transition-colors"
+                style={{background:on?C.posBg:C.card,borderColor:on?C.lagoon:C.border}}>
+                <span className="flex items-center justify-center rounded-full shrink-0 mt-1" style={{width:22,height:22,background:on?C.lagoon:'transparent',border:`2px solid ${on?C.lagoon:'#CFC6AE'}`}}>
+                  {on&&<Check size={13} color="#fff" strokeWidth={3}/>}
+                </span>
+                <span>
+                  <span className="text-sm font-bold block" style={{fontFamily:"'Space Grotesk',sans-serif",color:C.ink}}>{tx(r.l,lang)}</span>
+                  <span className="text-xs block" style={{color:C.soft}}>{tx(r.hint,lang)}</span>
+                </span>
+              </button>
+            );
+          })}
+          <button onClick={()=>{sendAnalytics(pro);go('results');}} className="w-full text-white font-bold text-lg rounded-2xl py-4 mt-3 hover:opacity-90 transition-opacity"
+            style={{background:C.lagoon,fontFamily:"'Space Grotesk',sans-serif"}}>
+            {T.voir}
+          </button>
+          <button onClick={()=>{sendAnalytics(pro);go('results');}} className="w-full text-center py-3 hover:opacity-70 transition-opacity"
+            style={{color:C.soft,fontSize:'0.875rem',fontWeight:500,background:'none',border:'none'}}>
+            {T.r_skip}
           </button>
           <Disclaimer T={T}/>
         </div>}
@@ -838,48 +953,50 @@ export default function BudgetImpactApp(){
             <RotateCcw size={15}/>{T.restart}
           </button>
 
-          {/* sticky header */}
-          <div className="rounded-t-3xl border border-b-0 px-5 pt-5 pb-4"
-            style={{background:C.card,borderColor:C.border,position:'sticky',top:0,zIndex:20,boxShadow:'0 8px 16px -10px rgba(28,27,26,.18)'}}>
-            <h2 className="text-xl font-bold mb-1" style={{fontFamily:"'Space Grotesk',sans-serif",color:C.ink}}>{T.res_t}</h2>
-            <p className="text-xs mb-4" style={{fontFamily:"'IBM Plex Mono',monospace",color:C.soft}}>{profSum}</p>
-            <div className="flex gap-2 flex-wrap">
-              {[{k:'pos',fn:T.b_pos,bg:C.posBg,fc:C.posT,d:'positive'},{k:'neg',fn:T.b_neg,bg:C.negBg,fc:C.negT,d:'negative'},{k:'neu',fn:T.b_neu,bg:C.neuBg,fc:C.neuT,d:'neutral'}].map(({k,fn,bg,fc,d})=>(
-                <button key={k} onClick={()=>first[d]&&scrollTo(`anc-${d}`)} disabled={!first[d]} className="rounded-full px-3 py-1 text-xs font-bold transition-opacity"
-                  style={{background:bg,color:fc,opacity:first[d]?1:.5,border:'none'}}>
-                  {fn(cnt[k]||0)}
-                </button>
-              ))}
-              {opps.length>0&&<button onClick={()=>scrollTo('anc-opp')} className="rounded-full px-3 py-1 text-xs font-bold" style={{background:C.oppBg,color:C.oppAcc,border:'none'}}>{T.b_opp(opps.length)}</button>}
+          {/* sticky wrapper: header + filtres */}
+          <div style={{position:'sticky',top:0,zIndex:20}}>
+            <div className="rounded-t-3xl border border-b-0 px-5 pt-5 pb-4"
+              style={{background:C.card,borderColor:C.border,boxShadow:'0 8px 16px -10px rgba(28,27,26,.18)'}}>
+              <h2 className="text-xl font-bold mb-1" style={{fontFamily:"'Space Grotesk',sans-serif",color:C.ink}}>{T.res_t}</h2>
+              <p className="text-xs mb-4" style={{fontFamily:"'IBM Plex Mono',monospace",color:C.soft}}>{profSum}</p>
+              <div className="flex gap-2 flex-wrap">
+                {[{k:'pos',fn:T.b_pos,bg:C.posBg,fc:C.posT,d:'positive'},{k:'neg',fn:T.b_neg,bg:C.negBg,fc:C.negT,d:'negative'},{k:'neu',fn:T.b_neu,bg:C.neuBg,fc:C.neuT,d:'neutral'}].map(({k,fn,bg,fc,d})=>(
+                  <button key={k} onClick={()=>first[d]&&scrollTo(`anc-${d}`)} disabled={!first[d]} className="rounded-full px-3 py-1 text-xs font-bold transition-opacity"
+                    style={{background:bg,color:fc,opacity:first[d]?1:.5,border:'none'}}>
+                    {fn(cnt[k]||0)}
+                  </button>
+                ))}
+                {opps.length>0&&<button onClick={()=>scrollTo('anc-opp')} className="rounded-full px-3 py-1 text-xs font-bold" style={{background:C.oppBg,color:C.oppAcc,border:'none'}}>{T.b_opp(opps.length)}</button>}
+              </div>
             </div>
-          </div>
-          <TornEdge/>
 
-          {/* Section filters */}
-          {activeSec.length>1&&(
-            <div className="mb-5 mt-2">
-              <div className="flex items-center gap-2 mb-2">
-                <Filter size={14} color={C.soft}/>
-                <span className="text-xs font-semibold" style={{fontFamily:"'IBM Plex Mono',monospace",color:C.soft}}>{T.filt}</span>
+            {/* Section filters — collés sous le header, fixes au scroll */}
+            {activeSec.length>1&&(
+              <div className="px-2 py-2" style={{background:C.page,borderBottom:`1px solid ${C.border}`}}>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Filter size={15} color={C.soft}/>
+                  <span className="text-xs font-semibold" style={{fontFamily:"'IBM Plex Mono',monospace",color:C.soft}}>{T.filt}</span>
+                </div>
+                <div className="flex gap-2 pb-1" style={{overflowX:'auto',WebkitOverflowScrolling:'touch'}}>
+                  <button onClick={()=>setSecFilt([])} className="rounded-full px-3.5 py-1.5 text-sm font-bold whitespace-nowrap shrink-0 transition-colors"
+                    style={{background:secFilt.length===0?C.lagoon:C.neuBg,color:secFilt.length===0?'#fff':C.neuT,border:`1.5px solid ${secFilt.length===0?C.lagoon:C.border}`}}>
+                    {T.filt0}
+                  </button>
+                  {activeSec.map(s=>{
+                    const on=secFilt.includes(s.id); const Icon=s.icon;
+                    return(
+                      <button key={s.id} onClick={()=>setSecFilt(prev=>on?prev.filter(x=>x!==s.id):[...prev,s.id])}
+                        className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-bold whitespace-nowrap shrink-0 transition-colors"
+                        style={{background:on?C.lagoon:C.neuBg,color:on?'#fff':C.neuT,border:`1.5px solid ${on?C.lagoon:C.border}`}}>
+                        <Icon size={14}/>{tx(s.l,lang)}{on&&<X size={12} strokeWidth={2.5}/>}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="flex gap-2 pb-1" style={{overflowX:'auto',WebkitOverflowScrolling:'touch'}}>
-                <button onClick={()=>setSecFilt([])} className="rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap shrink-0 transition-colors"
-                  style={{background:secFilt.length===0?C.lagoon:C.neuBg,color:secFilt.length===0?'#fff':C.neuT,border:`1.5px solid ${secFilt.length===0?C.lagoon:C.border}`}}>
-                  {T.filt0}
-                </button>
-                {activeSec.map(s=>{
-                  const on=secFilt.includes(s.id); const Icon=s.icon;
-                  return(
-                    <button key={s.id} onClick={()=>setSecFilt(prev=>on?prev.filter(x=>x!==s.id):[...prev,s.id])}
-                      className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap shrink-0 transition-colors"
-                      style={{background:on?C.lagoon:C.neuBg,color:on?'#fff':C.neuT,border:`1.5px solid ${on?C.lagoon:C.border}`}}>
-                      <Icon size={12}/>{tx(s.l,lang)}{on&&<X size={11} strokeWidth={2.5}/>}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+            )}
+            <TornEdge/>
+          </div>
 
           {/* Opportunities */}
           {opps.length>0&&(
