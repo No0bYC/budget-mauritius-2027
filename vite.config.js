@@ -1,5 +1,3 @@
-# FICHIER 3 : vite.config.js  (à la racine)
-# ─────────────────────────────────────────
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
