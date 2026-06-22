@@ -26,7 +26,7 @@ const UI={
 fr:{
   header:'Budget Maurice 2026\u20132027', step:(c,t)=>`\u00c9tape ${c} sur ${t}`,
   intro_title:"Qu'est-ce que ce budget change pour vous\u00a0?",
-  intro_sub:"R\u00e9pondez \u00e0 quelques questions pour identifier quelles mesures du Budget 2026-2027 vous concernent directement.",
+  intro_sub:"Identifiez simplement quelles mesures du Budget 2026-2027 vous concernent directement.",
   start:'Commencer',back:'Retour',restart:'Recommencer',next:'Continuer',
   q_nat:'\u00cates-vous mauricien\u00b7ne\u00a0?',oui:'Oui',non:'Non',
   q_genre:'Vous\u00a0\u00eates\u2026',homme:'Un homme',femme:'Une femme',gnr:'Pr\u00e9f\u00e8re ne pas r\u00e9pondre',
@@ -63,7 +63,7 @@ fr:{
 en:{
   header:'Mauritius Budget 2026\u20132027',step:(c,t)=>`Step ${c} of ${t}`,
   intro_title:"How does this budget affect you?",
-  intro_sub:"Answer a few questions to find out which measures of the 2026-2027 Budget apply to you directly.",
+  intro_sub:"Find out which measures of the 2026-2027 Budget apply to you directly.",
   start:'Start',back:'Back',restart:'Start over',next:'Continue',
   q_nat:'Are you Mauritian?',oui:'Yes',non:'No',
   q_genre:'You are\u2026',homme:'A man',femme:'A woman',gnr:'Prefer not to say',
@@ -99,7 +99,7 @@ en:{
 kr:{
   header:'Bidzet Moris 2026\u20132027',step:(c,t)=>`Letap ${c} lor ${t}`,
   intro_title:"Kouma bidzet nasional afekte ou?",
-  intro_sub:"Pou aid ou konpran, reponn kek kestion pou trouv ki mezir Bidze 2026-2027 konsern ou personalman.",
+  intro_sub:"Pou aid ou konpran ki mezir Bidze 2026-2027 konsern ou personalman.",
   start:'Koumans',back:'Retourn',restart:'Rekominse',next:'Kontinye',
   q_nat:'Eski ou Morisien/Morisin\u00a0?',oui:'Wi',non:'Non',
   q_genre:'Ou ete\u2026',homme:'Enn misie',femme:'Enn dam',gnr:'Mo prefer pa dir',
