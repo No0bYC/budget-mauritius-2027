@@ -808,10 +808,15 @@ export default function BudgetImpactApp(){
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <div style={{width:28}}><FlagStripe h={7}/></div>
-            <span className="text-xs uppercase font-semibold" style={{fontFamily:"'IBM Plex Mono',monospace",color:C.soft,letterSpacing:'0.08em'}}>{T.header}</span>
-          </div>
+          <svg viewBox="0 0 175 42" width="155" height="37" role="img" aria-label="My Budget Analysis Mauritius">
+            <rect x="0"  y="26" width="8" height="13" rx="1.5" fill="#E12C32"/>
+            <rect x="11" y="19" width="8" height="20" rx="1.5" fill="#1B2C5C"/>
+            <rect x="22" y="11" width="8" height="28" rx="1.5" fill="#F4C430"/>
+            <rect x="33" y="3"  width="8" height="36" rx="1.5" fill="#1E8449"/>
+            <line x1="0" y1="40" x2="44" y2="40" stroke="#E4DCC9" stroke-width="1.2"/>
+            <text x="52" y="21" fontSize="13" fontFamily="'Space Grotesk',system-ui,sans-serif" fontWeight="700" fill="#1C1B1A">My Budget Analysis</text>
+            <text x="53" y="36" fontSize="8"  fontFamily="'Space Grotesk',system-ui,sans-serif" fontWeight="500" fill="#0E7C7B" letterSpacing="2.5">Mauritius</text>
+          </svg>
           <LangBtn lang={lang} setLang={setLang}/>
         </div>
 
