@@ -9,7 +9,7 @@ const C={
   neuBg:'#E9EEEE',neuT:'#3C6B6A',oppBg:'#FBF1DC',oppBrd:'#E8C77E',oppAcc:'#92660E',
   flag:['#E12C32','#1B2C5C','#F4C430','#1E8449'],
 };
-const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzuXCM6Oki1LmCJCC3oxyhEsMhe8XiOG2yh8BktnaP6LQWQ9I3tmPzAnam5bo9NdE4/exec';
+const APPS_SCRIPT_URL='VOTRE_URL_ICI';
 
 const tx=(o,l)=>(typeof o==='string'?o:(o?.[l]||o?.fr||''));
 const isRet=p=>p.situations.includes('retraite')||p.age==='senior';
@@ -27,7 +27,7 @@ const UI={
 fr:{
   header:'Budget Maurice 2026\u20132027', step:(c,t)=>`\u00c9tape ${c} sur ${t}`,
   intro_title:"Qu'est-ce que ce budget change pour vous\u00a0?",
-  intro_sub:"Identifiez simplement quelles mesures du Budget 2026-2027 vous concernent directement.",
+  intro_sub:"Le budget 2026-2027 comporte des centaines de mesures. R\u00e9pondez \u00e0 quelques questions pour identifier celles qui vous concernent vraiment.",
   start:'Commencer',back:'Retour',restart:'Recommencer',next:'Continuer',
   q_nat:'\u00cates-vous mauricien\u00b7ne\u00a0?',oui:'Oui',non:'Non',
   q_genre:'Vous\u00a0\u00eates\u2026',homme:'Un homme',femme:'Une femme',gnr:'Pr\u00e9f\u00e8re ne pas r\u00e9pondre',
@@ -65,7 +65,7 @@ fr:{
 en:{
   header:'Mauritius Budget 2026\u20132027',step:(c,t)=>`Step ${c} of ${t}`,
   intro_title:"How does this budget affect you?",
-  intro_sub:"Find out what measures from the 2026-2027 Budget apply directly to you.",
+  intro_sub:"The 2026-2027 budget contains hundreds of measures. Answer a few questions to find the ones that matter to you.",
   start:'Start',back:'Back',restart:'Start over',next:'Continue',
   q_nat:'Are you Mauritian?',oui:'Yes',non:'No',
   q_genre:'You are\u2026',homme:'A man',femme:'A woman',gnr:'Prefer not to say',
@@ -102,13 +102,13 @@ en:{
 kr:{
   header:'Bidzet Moris 2026\u20132027',step:(c,t)=>`Letap ${c} lor ${t}`,
   intro_title:"Kouma bidzet-la afekte ou\u00a0?",
-  intro_sub:"Konpran ki mezir Bidze nasional konsern ou personalman.",
+  intro_sub:"Bidzet 2026-2027 ena santrenn mezir. Reponn kek kestion pou trouv seki konsern ou personalman.",
   start:'Koumans',back:'Retourn',restart:'Rekominse',next:'Kontinye',
-  q_nat:'Eski ou Morisien\u00a0?',oui:'Wi',non:'Non',
-  q_genre:'Ou ete\u2026',homme:'Misie',femme:'Madam',gnr:'Mo prefer pa dir',
+  q_nat:'Eski ou Morisien/Morisin\u00a0?',oui:'Wi',non:'Non',
+  q_genre:'Ou ete\u2026',homme:'Enn misie',femme:'Enn dam',gnr:'Mo prefer pa dir',
   q_age:'Ki laz ou ena\u00a0?',agej:'Mwin ki 26 an',agea:'26 ziska 59 an',ages:'60 an ek plis',
   q_sit:'Ki ou sitiasion aktyel\u00a0?',multi:'Plizier reponns posib.',
-  s_sal:'Salarye',s_ind:'Travayer indepandan / biznes',s_ret:'Retrete',
+  s_sal:'Salarye',s_ind:'Travayer endepandan / biznes',s_ret:'Retrete',
   s_etu:'Etidian',s_exp:'Expatriye ki reste Moris',s_inv:'Investiser',
   q_rev:'Ki ou reveni mansyel\u00a0?',q_rev_r:'Ki te ou dernie saler avan retrete\u00a0?',
   rev_h:"Sa reste lor ou aparey ek selman pou amelyor ou rezilta.",
@@ -773,7 +773,7 @@ export default function BudgetImpactApp(){
   const sendAnalytics=p=>{
     if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==='VOTRE_URL_ICI') return;
     const vis=M.filter(m=>m.condition(p));
-    fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:new Date().toISOString(),mauricien:p.mauricien||'',genre:p.genre||'nr',age:p.age||'',situations:p.situations.join(','),revenu:p.revenu||'',details:Object.values(p.details).join(','),proprietaire:p.proprietaire?1:0,voiture:p.voiture?1:0,enfants:p.enfants?1:0,pret:p.pretPersonnel?1:0,locatif:p.locatif?1:0,crypto:p.crypto?1:0,invalidite:p.invalidite?1:0,nb_mesures:vis.length,nb_opps:vis.filter(m=>m.opportunity).length})}).catch(()=>{});
+    fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:new Date().toISOString(),mauricien:p.mauricien||'',genre:p.genre||'nr',age:p.age||'',situations:p.situations.join(','),revenu:p.revenu||'',details:Object.values(p.details).join(','),proprietaire:p.proprietaire?1:0,voiture:p.voiture?1:0,enfants:p.enfants?1:0,pret:p.pretPersonnel?1:0,locatif:p.locatif?1:0,crypto:p.crypto?1:0,invalidite:p.invalidite?1:0,regions:p.regions.join(','),nb_mesures:vis.length,nb_opps:vis.filter(m=>m.opportunity).length})}).catch(()=>{});
   };
 
   const vis=M.filter(m=>m.condition(pro));
