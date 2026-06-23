@@ -9,7 +9,7 @@ const C={
   neuBg:'#E9EEEE',neuT:'#3C6B6A',oppBg:'#FBF1DC',oppBrd:'#E8C77E',oppAcc:'#92660E',
   flag:['#E12C32','#1B2C5C','#F4C430','#1E8449'],
 };
-const APPS_SCRIPT_URL='VOTRE_URL_ICI';
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzuXCM6Oki1LmCJCC3oxyhEsMhe8XiOG2yh8BktnaP6LQWQ9I3tmPzAnam5bo9NdE4/exec';
 
 const tx=(o,l)=>(typeof o==='string'?o:(o?.[l]||o?.fr||''));
 const isRet=p=>p.situations.includes('retraite')||p.age==='senior';
