@@ -773,7 +773,7 @@ export default function BudgetImpactApp(){
   const sendAnalytics=p=>{
     if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL==='VOTRE_URL_ICI') return;
     const vis=M.filter(m=>m.condition(p));
-    fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:new Date().toISOString(),mauricien:p.mauricien||'',genre:p.genre||'nr',age:p.age||'',situations:p.situations.join(','),revenu:p.revenu||'',details:Object.values(p.details).join(','),proprietaire:p.proprietaire?1:0,voiture:p.voiture?1:0,enfants:p.enfants?1:0,pret:p.pretPersonnel?1:0,locatif:p.locatif?1:0,crypto:p.crypto?1:0,invalidite:p.invalidite?1:0,regions:p.regions.join(','),nb_mesures:vis.length,nb_opps:vis.filter(m=>m.opportunity).length})}).catch(()=>{});
+    fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({timestamp:new Date().toISOString(),mauricien:p.mauricien||'',genre:p.genre||'nr',age:p.age||'',situations:p.situations.join(','),revenu:p.revenu||'',details:Object.values(p.details).join(','),proprietaire:p.proprietaire?1:0,voiture:p.voiture?1:0,enfants:p.enfants?1:0,pret_personnel:p.pretPersonnel?1:0,locatif:p.locatif?1:0,crypto:p.crypto?1:0,invalidite:p.invalidite?1:0,regions:p.regions.join(','),nb_mesures:vis.length,nb_opps:vis.filter(m=>m.opportunity).length})}).catch(()=>{});
   };
 
   const vis=M.filter(m=>m.condition(pro));
@@ -808,14 +808,14 @@ export default function BudgetImpactApp(){
 
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <svg viewBox="0 0 175 42" width="155" height="37" role="img" aria-label="My Budget Analysis Mauritius">
+          <svg viewBox="0 0 205 42" width="175" height="36" role="img" aria-label="My Budget Analysis Mauritius">
             <rect x="0"  y="26" width="8" height="13" rx="1.5" fill="#E12C32"/>
             <rect x="11" y="19" width="8" height="20" rx="1.5" fill="#1B2C5C"/>
             <rect x="22" y="11" width="8" height="28" rx="1.5" fill="#F4C430"/>
             <rect x="33" y="3"  width="8" height="36" rx="1.5" fill="#1E8449"/>
-            <line x1="0" y1="40" x2="44" y2="40" stroke="#E4DCC9" stroke-width="1.2"/>
-            <text x="52" y="21" fontSize="13" fontFamily="'Space Grotesk',system-ui,sans-serif" fontWeight="700" fill="#1C1B1A">My Budget Analysis</text>
-            <text x="53" y="36" fontSize="8"  fontFamily="'Space Grotesk',system-ui,sans-serif" fontWeight="500" fill="#0E7C7B" letterSpacing="2.5">Mauritius</text>
+            <line x1="0" y1="40" x2="44" y2="40" stroke="#E4DCC9" strokeWidth="1.2"/>
+            <text x="50" y="21" fontSize="12" fontFamily="'Space Grotesk',system-ui,sans-serif" fontWeight="700" fill="#1C1B1A">My Budget Analysis</text>
+            <text x="50" y="36" fontSize="8"  fontFamily="'Space Grotesk',system-ui,sans-serif" fontWeight="500" fill="#0E7C7B" letterSpacing="2">Mauritius</text>
           </svg>
           <LangBtn lang={lang} setLang={setLang}/>
         </div>
